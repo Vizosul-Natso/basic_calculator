@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>calculator</title>
+    <style>
+        html{
+    box-sizing: border-box;
+}
+
+body{
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(to right, #20002c, #cbb4d4);
+}
+.calculator{
+    width: 400px;
+    border-radius: 12px;
+    box-shadow: 0 5px 30px -5px rgba(0, 0, 0,0.8);
+}
+.calculator-display{
+    background: linear-gradient(to right, #bd6bdb , #baaabd);
+    color: rgb(47, 14, 70);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    border-radius: 10px 10px 0 0;
+}
+.calculator-display h1{
+    margin: 0;
+    height: 48px;
+    padding: 20px;
+    font-size: 40px;
+    font-family: 'lucida Console','cursive';
+    overflow-x: auto;
+}
+
+/* custom-scroll bar */
+::-webkit-scrollbar {
+    width:0;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background:  #cc97f0;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background:  #965bbd;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background:  #ad60e0;
+  }
+
+  /* buttons */
+  .calculator-buttons{
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    grid-gap: 10px;
+    padding: 10px;
+
+    
+  }
+  button{
+    min-height: 50px;
+    font-size: 20px;
+    font-weight: 100;
+    border: none;
+    cursor: pointer;
+    background-color: #cc97f0;
+    border-radius: 4px;
+  }
+  button:hover{
+    filter: brightness(150%);
+  }
+  button:active{
+    transform: translateY(1.3px);
+  }
+
+  .op{
+    background:#63268b;
+    color: white;
+  }
+  .e{
+    background:#63268b;
+    color: white;
+    grid-column: 4;
+    grid-row: 3 /span 3;
+  }
+  .del{
+    background:#5e2770;
+  }
+  .clear{
+    background:#5e2770;
+    color: white;
+  }
+
+  /* Media Query: large smartphone vertical */
+  @media screen and (max-width: 600px){
+    .calculator{
+        width: 95%;
+    }
+  }
+    </style>
+  </head>
+  <body>
+    <div class="calculator">
+      <div class="calculator-display">
+        <h1>0</h1>
+      </div>
+      <div class="calculator-buttons">
+        <button value="+" class="op">+</button>
+        <button value="-" class="op">-</button>
+        <button value="/" class="op">÷</button>
+        <button value="*" class="op">x</button>
+        <button value="7" >7</button>
+        <button value="8" >8</button>
+        <button value="9" >9</button>
+        <button value="del" class="del" id="del">del</button>
+        <button value="4" >4</button>
+        <button value="5" >5</button>
+        <button value="6" >6</button>
+        <button value="1" >1</button>
+        <button value="2" >2</button>
+        <button value="3" >3</button>
+        <button value="." class="decimal" >.</button>
+        <button value="0" >0</button>
+        <button value="clear" class="clear" id="clear">C</button>
+        <button value="=" class="e op" id="equal">=</button>
+      </div>
+    </div>
+
+    <script>
+        let op1=0;
+let opV='';
+let nextV=false;
+
+const Display =document.querySelector('h1');
+const input=document.querySelectorAll('button');
+const clearB=document.getElementById('clear')
+const del =document.getElementById('del');
+
+function passNo(number){
+    if(nextV){
+        Display.textContent=number;
+        nextV=false
+    }else{
+    const dValue=Display.textContent;
+    Display.textContent = dValue==='0'? number: dValue +number;
+    }
+}
+
+function addDecimal(){
+    if(nextV){
+        return;
+    }
+    if(!Display.textContent.includes('.')){
+        Display.textContent=`${Display.textContent}.`;
+    }
+}
+
+const calculate ={
+    '/' : (fno,sno) => fno/sno,
+    '+' : (fno,sno) => fno+sno,
+    '-' : (fno,sno) => fno-sno,
+    '*' : (fno,sno) => fno*sno,
+    '=' : (fno,sno) => sno,
+}
+
+function operate(operator){
+    const a=Number(Display.textContent);
+    if(opV && nextV){
+        opV= operator;
+        return;
+    }
+    if(!op1){
+       op1=a; //op1 = 1st value and  a is 2nd value
+    }else{
+        const calculation = calculate[opV](op1,a);
+        Display.textContent=calculation;
+        op1=calculation;
+    }
+    nextV=true;
+    opV= operator;
+    
+}
+
+input.forEach((input)=>{
+    if(input.classList.length===0){
+        input.addEventListener('click',()=> passNo(input.value))
+    }else if(input.classList.contains('op')){
+        input.addEventListener('click',()=> operate(input.value))
+    }else if(input.classList.contains('decimal')){
+        input.addEventListener('click',()=> addDecimal())
+    }
+});
+
+function clear(){
+    Display.textContent=''
+    op1=0;
+    opV='';
+    nextV=false;
+}
+clearB.addEventListener('click',clear);
+
+function deleting(){
+    Display.textContent =Display.textContent.substring(0,Display.textContent.length-1);
+ }
+ del.addEventListener('click',()=> deleting());
+ 
+
+
+
+    </script>
+  </body>
+</html>
